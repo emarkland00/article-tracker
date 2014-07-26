@@ -8,6 +8,7 @@ class RedditChildArticleData:
         self.created_utc = json['created_utc']
         self.selftext_html = json['selftext_html']
         self.selftext = json['selftext']
+        self.url = json['url']
         
     def is_self_article(self):
         return self.selftext == None

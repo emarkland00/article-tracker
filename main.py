@@ -1,5 +1,8 @@
 import requests
+from datetime import datetime
 from reddit import RedditArticleListing
+from mysql import Article
+
 # config
 BASE_URL = 'http://www.reddit.com'
 USER_AGENT = 'sol7117 article fetcher'
@@ -14,5 +17,14 @@ def get_liked_articles():
          
 liked_articles = get_liked_articles()
 filtered_articles = liked_articles.filter_by_subreddit(u'technology', u'AskReddit')
+
+if Article.table_exists() is False:
+    Article.create_table()
+        
+for art in Article.select():
+    print art.article_id, art.name, art.url, art.timestamp
+    
 for f in filtered_articles:
-    print '{0}: {1}'.format(f.data.subreddit, f.data.title)
+    Article.create(name=f.data.title, url=f.data.url, source='reddit', timestamp=datetime.now())
+    
+print "done!"

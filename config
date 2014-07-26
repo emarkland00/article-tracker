@@ -1,0 +1,4 @@
+[config]
+BASE_URL = http://www.reddit.com
+USER_AGENT = sol7117 article fetcher
+USERNAME = sol7117    

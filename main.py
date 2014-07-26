@@ -1,21 +1,30 @@
 import requests
+import ConfigParser
 from datetime import datetime
 from reddit import RedditArticleListing
-from mysql import Article
+from mysql import Article    
 
-# config
-BASE_URL = 'http://www.reddit.com'
-USER_AGENT = 'sol7117 article fetcher'
-USERNAME = 'sol7117'    
+class ConfigClass():
+    pass
 
-def get_liked_articles():    
-    url = BASE_URL + '/user/{0}/liked/.json'.format(USERNAME) 
-    headers = { 'User-Agent': USER_AGENT }
+def init():
+    parser = ConfigParser.ConfigParser()
+    parser.read('config')
+    config = ConfigClass()
+    config.base_url = parser.get('config', 'BASE_URL')
+    config.username = parser.get('config', 'USERNAME')
+    config.user_agent = parser.get('config', 'USER_AGENT')
+    return config
+
+def get_liked_articles(config):    
+    url = '{1}/user/{0}/liked/.json'.format(config.username, config.base_url) 
+    headers = { 'User-Agent': config.user_agent }
     req = requests.get(url, headers=headers)
     json = req.json();
     return RedditArticleListing(json['data']) 
-         
-liked_articles = get_liked_articles()
+
+settings = init()         
+liked_articles = get_liked_articles(settings)
 filtered_articles = liked_articles.filter_by_subreddit(u'technology', u'AskReddit')
 
 if Article.table_exists() is False:

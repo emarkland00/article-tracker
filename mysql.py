@@ -1,6 +1,8 @@
 from peewee import MySQLDatabase, Model, PrimaryKeyField, CharField, DateTimeField
+from config import ConfigClass
 
-mysql_db = MySQLDatabase('article-tracker-db', host='127.0.0.1', user='root', passwd='password')
+mysql_config = ConfigClass().get_mysql_config()
+mysql_db = MySQLDatabase(mysql_config.db_name, host=mysql_config.host, user=mysql_config.username, passwd=mysql_config.password)
 
 class MySQLModel(Model):
     """A base model that will use our MySQL database"""

@@ -1,20 +1,8 @@
 import requests
-import ConfigParser
+from config import ConfigClass
 from datetime import datetime
 from reddit import RedditArticleListing
 from mysql import Article    
-
-class ConfigClass():
-    pass
-
-def init():
-    parser = ConfigParser.ConfigParser()
-    parser.read('config')
-    config = ConfigClass()
-    config.base_url = parser.get('config', 'BASE_URL')
-    config.username = parser.get('config', 'USERNAME')
-    config.user_agent = parser.get('config', 'USER_AGENT')
-    return config
 
 def get_liked_articles(config):    
     url = '{1}/user/{0}/liked/.json'.format(config.username, config.base_url) 
@@ -23,7 +11,7 @@ def get_liked_articles(config):
     json = req.json();
     return RedditArticleListing(json['data']) 
 
-settings = init()         
+settings = ConfigClass().get_reddit_config()         
 liked_articles = get_liked_articles(settings)
 filtered_articles = liked_articles.filter_by_subreddit(u'technology', u'AskReddit')
 

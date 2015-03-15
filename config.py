@@ -10,7 +10,7 @@ class ConfigClass():
     def init():
         if ConfigClass.parser is None:
             ConfigClass.parser = ConfigParser.ConfigParser()
-            ConfigClass.parser.read('config.ini')
+            ConfigClass.parser.read('config.ini')   #TODO: Fix this on server side
             
     @staticmethod
     def fetchParam(section, key):

@@ -1,27 +1,29 @@
-import requests
-from config import ConfigClass
-from datetime import datetime
-from reddit import RedditArticleListing
+from reddit import RedditClient
 from mysql import Article    
 
-def get_liked_articles(config):    
-    url = '{1}/user/{0}/liked/.json'.format(config.username, config.base_url) 
-    headers = { 'User-Agent': config.user_agent }
-    req = requests.get(url, headers=headers)
-    json = req.json();
-    return RedditArticleListing(json['data']) 
+def go():
+    fetch_reddit_stuff()
+    fetch_hacker_news_stuff()
 
-settings = ConfigClass().get_reddit_config()         
-liked_articles = get_liked_articles(settings)
-filtered_articles = liked_articles.filter_by_subreddit(u'technology', u'AskReddit')
-
-if Article.table_exists() is False:
-    Article.create_table()
+def fetch_reddit_stuff():
+    print "getting reddit stuff"
+    client = RedditClient()
+    filtered_posts = client.get_liked_posts().filter_by_new_listings().filter_by_subreddit(u'technology')
         
-for art in Article.select():
-    print art.article_id, art.name, art.url, art.timestamp
+    for post in filtered_posts:
+        art = post.to_article()
+        Article.create(name=art['name'], url=art['url'], source=art['source'], article_key=art['article_key'], timestamp=art['timestamp'])
+        
+    print "finished getting reddit stuff!"
+
+def fetch_hacker_news_stuff():
+    """
+    HACKER NEWS
     
-for f in filtered_articles:
-    Article.create(name=f.data.title, url=f.data.url, source='reddit', timestamp=datetime.now())
+    https://news.ycombinator.com/saved?id=sol7117
     
-print "done!"
+    requires user session cookie...
+    """
+    pass
+
+go()

@@ -10,10 +10,12 @@ class MySQLModel(Model):
         database = mysql_db
         
 class Article(MySQLModel):
+    """A generic container for holding information"""
     article_id = PrimaryKeyField()
     name = CharField()
     url = CharField()
     source = CharField()
+    article_key = CharField()
     timestamp = DateTimeField()
     
 def init():

@@ -1,5 +1,5 @@
 import ConfigParser
-
+#import os.path # needed on server side
 class ConfigClass():
     parser = None
     
@@ -10,6 +10,7 @@ class ConfigClass():
     def init():
         if ConfigClass.parser is None:
             ConfigClass.parser = ConfigParser.ConfigParser()
+            #path = os.getcwd() + "/bin/python/article-tracker/config.ini"  #needed_on_server_side  
             ConfigClass.parser.read('config.ini')   #TODO: Fix this on server side
             
     @staticmethod

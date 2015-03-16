@@ -22,6 +22,8 @@ class ConfigClass():
         c.base_url = ConfigClass.fetchParam(section, 'BASE_URL')
         c.username = ConfigClass.fetchParam(section, 'USERNAME')
         c.user_agent = ConfigClass.fetchParam(section, 'USER_AGENT')
+        c.client_id = ConfigClass.fetchParam(section, 'CLIENT_ID')
+        c.client_secret = ConfigClass.fetchParam(section, 'CLIENT_SECRET')
         return c
     
     def get_mysql_config(self):

@@ -14,26 +14,33 @@ class ConfigClass():
             ConfigClass.parser.read('config.ini')   #TODO: Fix this on server side
             
     @staticmethod
-    def fetchParam(section, key):
+    def fetch_param(section, key):
         return ConfigClass.parser.get(section, key)
             
     def get_reddit_config(self):
         section = 'config'
         c = ConfigClass()
-        c.base_url = ConfigClass.fetchParam(section, 'BASE_URL')
-        c.username = ConfigClass.fetchParam(section, 'USERNAME')
-        c.user_agent = ConfigClass.fetchParam(section, 'USER_AGENT')
-        c.client_id = ConfigClass.fetchParam(section, 'CLIENT_ID')
-        c.client_secret = ConfigClass.fetchParam(section, 'CLIENT_SECRET')
+        c.base_url = ConfigClass.fetch_param(section, 'BASE_URL')
+        c.username = ConfigClass.fetch_param(section, 'USERNAME')
+        c.user_agent = ConfigClass.fetch_param(section, 'USER_AGENT')
+        c.client_id = ConfigClass.fetch_param(section, 'CLIENT_ID')
+        c.client_secret = ConfigClass.fetch_param(section, 'CLIENT_SECRET')
         return c
     
+    def get_hacker_news_config(self):
+        section = 'hacker_news'
+        c = ConfigClass()
+        c.base_url = ConfigClass.fetch_param(section, 'BASE_URL')
+        c.username = ConfigClass.fetch_param(section, 'USERNAME')
+        c.password = ConfigClass.fetch_param(section, 'PASSWORD')
+                                            
     def get_mysql_config(self):
         section = 'database'
         c = ConfigClass()
-        c.host = ConfigClass.fetchParam(section, 'host')
-        c.username = ConfigClass.fetchParam(section, 'username')
-        c.password = ConfigClass.fetchParam(section, 'password')
-        c.db_name = ConfigClass.fetchParam(section, 'db_name')
+        c.host = ConfigClass.fetch_param(section, 'host')
+        c.username = ConfigClass.fetch_param(section, 'username')
+        c.password = ConfigClass.fetch_param(section, 'password')
+        c.db_name = ConfigClass.fetch_param(section, 'db_name')
         return c
         
     

@@ -113,10 +113,14 @@ class RedditPostListing:
         return self
         
     def filter_by_subreddit(self, *subreddits):
-        return RedditFilter.by_subreddit(self.children, subreddits)
+        self.children = [c for c in self.children if c.data.subreddit in subreddits]
+        return self
     
     def filter_by_author(self, *authors):
         return RedditFilter.by_author(authors)
+    
+    def posts(self):
+        return self.children
         
 class RedditFilter:
     @staticmethod

@@ -8,7 +8,7 @@ def go():
 def fetch_reddit_stuff():
     print "getting reddit stuff"
     client = RedditClient()
-    filtered_posts = client.get_liked_posts().filter_by_new_listings().filter_by_subreddit(u'technology')
+    filtered_posts = client.get_liked_posts().filter_by_new_listings().filter_by_subreddit(u'technology',u'BlackPeopleTwitter').posts()
         
     for post in filtered_posts:
         art = post.to_article()

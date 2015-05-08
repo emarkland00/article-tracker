@@ -18,3 +18,10 @@ class HackerNewsClient:
         self.username = hn_config.username
         self.password = hn_config.password
         self.base_url = hn_config.base_url
+        
+    def login(self):
+        pass
+    
+    def fetch_upvoted_articles(self):
+        pass
+    # maybe get reports for the last 30 DAYS?

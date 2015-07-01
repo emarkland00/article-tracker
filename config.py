@@ -33,6 +33,8 @@ class ConfigClass():
         c.base_url = ConfigClass.fetch_param(section, 'BASE_URL')
         c.username = ConfigClass.fetch_param(section, 'USERNAME')
         c.password = ConfigClass.fetch_param(section, 'PASSWORD')
+        c.user_agent = ConfigClass.fetch_param(section, 'USER_AGENT')
+        return c
                                             
     def get_mysql_config(self):
         section = 'database'

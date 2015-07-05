@@ -24,10 +24,12 @@ class HackerNewsClient:
         
     def login(self):
         login_url = '{0}/login?goto=news'.format(self.base_url)
-        print login_url
         headers = { 'User-Agent': self.user_agent }
         data = { 'goto': 'news', 'acct': self.username, 'pw': self.password }
-                
+
+        # we may require web driver. I suspect that HN has CSRF tokens in place. That explains why we can't directly login to the account from the login page.
+  
+
         response = self.session.post(login_url,
                             headers=headers,
                             data=data)

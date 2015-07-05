@@ -44,8 +44,17 @@ class HackerNewsClient:
         url = '{0}/saved?id={1}'.format(self.base_url, self.username)
         response = self.session.get(url)
         tree = html.fromstring(response.text)
-        posts = tree.xpath("//tr[@class='athing']")
-        
+        tables = tree.xpath("//table")
+        for t in tables:
+            post = t.xpath("//tr[contains('@class', 'athing')]")
+            if len(post) is 0:
+                continue
+
+
+            header = post.xpath("//td[@class='title']/a")
+            link = header.attr('href')
+            title = header.value
+            author = post.xpath("//span").value
     # maybe get reports for the last 30 DAYS?
 
 client = HackerNewsClient()

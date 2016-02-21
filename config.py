@@ -1,4 +1,5 @@
-import ConfigParser
+import configparser
+
 #import os.path # needed on server side
 class ConfigClass():
     parser = None
@@ -9,7 +10,7 @@ class ConfigClass():
     @staticmethod
     def init():
         if ConfigClass.parser is None:
-            ConfigClass.parser = ConfigParser.ConfigParser()
+            ConfigClass.parser = configparser.ConfigParser()
             #path = os.getcwd() + "/bin/python/article-tracker/config.ini"  #needed_on_server_side  
             ConfigClass.parser.read('config.ini')   #TODO: Fix this on server side
             
@@ -35,5 +36,3 @@ class ConfigClass():
         c.password = ConfigClass.fetchParam(section, 'password')
         c.db_name = ConfigClass.fetchParam(section, 'db_name')
         return c
-        
-    

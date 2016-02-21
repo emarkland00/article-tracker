@@ -1,8 +1,9 @@
 from reddit import RedditClient
 from mysql import Article    
+from hacker_news import HackerNewsClient
 
 def go():
-    fetch_reddit_stuff()
+    #fetch_reddit_stuff()
     fetch_hacker_news_stuff()
 
 def fetch_reddit_stuff():
@@ -17,6 +18,9 @@ def fetch_reddit_stuff():
     print("finished getting reddit stuff!")
 
 def fetch_hacker_news_stuff():
+    client = HackerNewsClient()
+    client.login()
+    
     """
     HACKER NEWS
     
@@ -24,6 +28,5 @@ def fetch_hacker_news_stuff():
     
     requires user session cookie...
     """
-    pass
 
 go()

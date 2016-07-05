@@ -62,3 +62,6 @@ local.properties
 
 # Ignore compiled pythong
 *.pyc
+
+# Ignore config file
+config.ini

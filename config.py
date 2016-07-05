@@ -18,7 +18,7 @@ class ConfigClass():
         return ConfigClass.parser.get(section, key)
             
     def get_reddit_config(self):
-        section = 'config'
+        section = 'reddit'
         c = ConfigClass()
         c.base_url = ConfigClass.fetchParam(section, 'BASE_URL')
         c.username = ConfigClass.fetchParam(section, 'USERNAME')
@@ -28,7 +28,7 @@ class ConfigClass():
         return c
     
     def get_mysql_config(self):
-        section = 'database'
+        section = 'mysql'
         c = ConfigClass()
         c.host = ConfigClass.fetchParam(section, 'host')
         c.username = ConfigClass.fetchParam(section, 'username')

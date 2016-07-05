@@ -16,8 +16,8 @@ db_name=<database_name>
 ```
 [reddit]
 BASE_URL = https://oauth.reddit.com
-USER_AGENT = python35:sol7117_article_fetcher:v0.1 (by /u/sol7117)
-USERNAME = sol7117
-CLIENT_ID = 7LYEqJuZkUq-6A
-CLIENT_SECRET = 8eFiiQ3xr_FXqcyHACm6yCVSCfA
+USER_AGENT = <user_agent_name>
+USERNAME = <reddit_username>
+CLIENT_ID = <reddit_api_client_id>
+CLIENT_SECRET = <reddit_api_client_key>
 ```

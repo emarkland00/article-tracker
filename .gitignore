@@ -66,3 +66,6 @@ local.properties
 # Ignore config file
 config.ini
 *_access_token
+
+# Ignore virtual environment	
+env/*

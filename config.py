@@ -6,51 +6,55 @@ __CONFIG_INSTANCE__ = None
 class ConfigClass:
     FILENAME = 'config.ini'
     def __init__(self):
-        self.parser = self.__get_instance()
+        global __CONFIG_INSTANCE__
+        self.__parser = self.__get_instance()
+
+    def has_config(self):
+        return __CONFIG_INSTANCE__ is not None
 
     def __get_instance(self):
+        global __CONFIG_INSTANCE__
+        # Manage a global instance of the parser
         if not __CONFIG_INSTANCE__:
-            if not self.__has_config_file():
+            # Check that the config file exists before creating instance
+            if os.path.isfile(ConfigClass.FILENAME):
                 __CONFIG_INSTANCE__ = ConfigParser()
                 __CONFIG_INSTANCE__.read(ConfigClass.FILENAME)
 
         return __CONFIG_INSTANCE__
 
-    def __has_config_file(self):
-        return os.path.isfile(ConfigClass.filename)
-
-    def __has_section(self, name):
-        if not __CONFIG_PARSER_FILE__:
-            return false
+    def __get_section(self, name):
+        if not __CONFIG_INSTANCE__:
+            return None
 
         import pdb; pdb.set_trace()
         # find out command to check if section exists in config file
 
-    @staticmethod
-    def fetchParam(section, key):
-        return ConfigClass.parser.get(section, key)
+    def __fetch_param(section, key):
+        return __CONFIG_INSTANCE__.get(section, key)
 
     def get_reddit_config(self):
-        section = 'reddit'
-        if not self.__has_section(section):
-            return
+        reddit_config = self.__get_section('reddit')
+        if not reddit_config:
+            return None
 
-        c = ConfigClass()
-        c.base_url = ConfigClass.fetchParam(section, 'BASE_URL')
-        c.username = ConfigClass.fetchParam(section, 'USERNAME')
-        c.user_agent = ConfigClass.fetchParam(section, 'USER_AGENT')
-        c.client_id = ConfigClass.fetchParam(section, 'CLIENT_ID')
-        c.client_secret = ConfigClass.fetchParam(section, 'CLIENT_SECRET')
-        return c
+        return {
+            'base_url': reddit_config.get('BASE_URL'),
+            'username': self.__fetch_param(section, 'USERNAME'),
+            'user_agent': self.__fetch_param(section, 'USER_AGENT'),
+            'client_id': self.__fetch_param(section, 'CLIENT_ID'),
+            'client_secret': self.__fetch_param(section, 'CLIENT_SECRET')
+        }
 
     def get_mysql_config(self):
         section = 'mysql'
-        if not self.__has_section(section):
-            return
+        mysql_config = self.__get_section(section)
+        if not mysql_config:
+            return None
 
-        c = ConfigClass()
-        c.host = ConfigClass.fetchParam(section, 'host')
-        c.username = ConfigClass.fetchParam(section, 'username')
-        c.password = ConfigClass.fetchParam(section, 'password')
-        c.db_name = ConfigClass.fetchParam(section, 'db_name')
-        return c
+        return {
+            "host": self.__fetch_param(section, 'host'),
+            "username": self.__fetch_param(section, 'username'),
+            "password": self.__fetch_param(section, 'password'),
+            "db_name": self.__fetch_param(section, 'db_name')
+        }

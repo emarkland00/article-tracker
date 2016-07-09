@@ -1,37 +1,30 @@
 from configparser import ConfigParser
 import os
 
-__CONFIG_INSTANCE__ = None
-
 class ConfigClass:
+    __CONFIG_INSTANCE__ = None
     FILENAME = 'config.ini'
+
     def __init__(self):
-        global __CONFIG_INSTANCE__
-        self.__parser = self.__get_instance()
+        self.__instance = None
+        if ConfigClass.__CONFIG_INSTANCE__:
+            self.__instance = ConfigClass.__CONFIG_INSTANCE__
 
-    def has_config(self):
-        return __CONFIG_INSTANCE__ is not None
-
-    def __get_instance(self):
-        global __CONFIG_INSTANCE__
-        # Manage a global instance of the parser
-        if not __CONFIG_INSTANCE__:
-            # Check that the config file exists before creating instance
-            if os.path.isfile(ConfigClass.FILENAME):
-                __CONFIG_INSTANCE__ = ConfigParser()
-                __CONFIG_INSTANCE__.read(ConfigClass.FILENAME)
-
-        return __CONFIG_INSTANCE__
+    def __new__(cls):
+        import pdb; pdb.set_trace()
+        if not ConfigClass.__CONFIG_INSTANCE__:
+            ConfigClass.__CONFIG_INSTANCE__ = __ConfigInstance(ConfigClass.FILENAME)
+        return ConfigClass.__CONFIG_INSTANCE__
 
     def __get_section(self, name):
-        if not __CONFIG_INSTANCE__:
+        if not self.__instance:
             return None
 
-        import pdb; pdb.set_trace()
+
         # find out command to check if section exists in config file
 
     def __fetch_param(section, key):
-        return __CONFIG_INSTANCE__.get(section, key)
+        return self.__instance.get(section, key)
 
     def get_reddit_config(self):
         reddit_config = self.__get_section('reddit')
@@ -58,3 +51,20 @@ class ConfigClass:
             "password": self.__fetch_param(section, 'password'),
             "db_name": self.__fetch_param(section, 'db_name')
         }
+
+class __ConfigInstance:
+    """
+    An internal container used to manage the config instance
+    """
+    def __init(self, filename):
+        self.filename = filename
+        self.instance = self.__get_instance()
+
+    def __get_instance(self):
+        # Check that the config file exists before creating instance
+        if not os.path.isfile(self.filename):
+            return None
+
+        p = ConfigParser()
+        p.read(self.filename)
+        return p

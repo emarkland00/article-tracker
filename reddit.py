@@ -18,7 +18,7 @@ class RedditClient:
         if not reddit_config:
             print "Missing reddit config. Unable to fetch content from reddit."
             return
-            
+
         self.base_url = reddit_config.base_url
         self.user_agent = reddit_config.user_agent
         self.username = reddit_config.username

@@ -2,69 +2,49 @@ from configparser import ConfigParser
 import os
 
 class ConfigClass:
-    __CONFIG_INSTANCE__ = None
+    class __ConfigInstance:
+        """
+        An internal container used to manage the config instance
+        """
+        def __init__(self, filename):
+            self.filename = filename
+            self.instance = self.__get_instance()
+
+        def __get_instance(self):
+            # Check that the config file exists before creating instance
+            if not os.path.isfile(self.filename):
+                return None
+
+            p = ConfigParser()
+            p.read(self.filename)
+            return p
+
+    # The singleton used to hold the config instance
+    __INST__ = None
+
+    # The name of the config file to search for
     FILENAME = 'config.ini'
 
     def __init__(self):
-        self.__instance = None
-        if ConfigClass.__CONFIG_INSTANCE__:
-            self.__instance = ConfigClass.__CONFIG_INSTANCE__
+        if ConfigClass.__INST__:
+            self.instance = ConfigClass.__INST__.instance
+        else:
+            ConfigClass.__INST__ = ConfigClass.__ConfigInstance(ConfigClass.FILENAME)
+            if ConfigClass.__INST__:
+                self.instance = ConfigClass.__INST__.instance
 
-    def __new__(cls):
-        import pdb; pdb.set_trace()
-        if not ConfigClass.__CONFIG_INSTANCE__:
-            ConfigClass.__CONFIG_INSTANCE__ = __ConfigInstance(ConfigClass.FILENAME)
-        return ConfigClass.__CONFIG_INSTANCE__
-
-    def __get_section(self, name):
-        if not self.__instance:
+    def __get_section_values(self, section_name, section_keys):
+        if not self.instance or not self.instance.has_section(section_name):
             return None
 
-
+        fn = lambda x: self.instance.get(section_name, x)
+        return { k.lower():fn(k) for k in section_keys }
         # find out command to check if section exists in config file
 
-    def __fetch_param(section, key):
-        return self.__instance.get(section, key)
-
     def get_reddit_config(self):
-        reddit_config = self.__get_section('reddit')
-        if not reddit_config:
-            return None
-
-        return {
-            'base_url': reddit_config.get('BASE_URL'),
-            'username': self.__fetch_param(section, 'USERNAME'),
-            'user_agent': self.__fetch_param(section, 'USER_AGENT'),
-            'client_id': self.__fetch_param(section, 'CLIENT_ID'),
-            'client_secret': self.__fetch_param(section, 'CLIENT_SECRET')
-        }
+        keys = [ 'BASE_URL', 'USERNAME', 'USER_AGENT', 'CLIENT_ID', 'CLIENT_SECRET' ]
+        return self.__get_section_values('reddit', keys)
 
     def get_mysql_config(self):
-        section = 'mysql'
-        mysql_config = self.__get_section(section)
-        if not mysql_config:
-            return None
-
-        return {
-            "host": self.__fetch_param(section, 'host'),
-            "username": self.__fetch_param(section, 'username'),
-            "password": self.__fetch_param(section, 'password'),
-            "db_name": self.__fetch_param(section, 'db_name')
-        }
-
-class __ConfigInstance:
-    """
-    An internal container used to manage the config instance
-    """
-    def __init(self, filename):
-        self.filename = filename
-        self.instance = self.__get_instance()
-
-    def __get_instance(self):
-        # Check that the config file exists before creating instance
-        if not os.path.isfile(self.filename):
-            return None
-
-        p = ConfigParser()
-        p.read(self.filename)
-        return p
+        keys = [ 'host', 'username', 'password', 'db_name' ]
+        return self.__get_section_values('mysql', keys)

@@ -19,12 +19,12 @@ class RedditClient:
             print "Missing reddit config. Unable to fetch content from reddit."
             return
 
-        self.base_url = reddit_config.base_url
-        self.user_agent = reddit_config.user_agent
-        self.username = reddit_config.username
-        self.client_id = reddit_config.client_id
-        self.client_secret = reddit_config.client_secret
-        self.access_token = self.fetch_access_token()
+        self.base_url = reddit_config['base_url']
+        self.user_agent = reddit_config['user_agent']
+        self.username = reddit_config['username']
+        self.client_id = reddit_config['client_id']
+        self.client_secret = reddit_config['client_secret']
+        self.access_token = self.__fetch_access_token()
 
     def get_liked_posts(self):
         url = '{1}/user/{0}/liked/.json'.format(self.username, self.base_url)
@@ -33,13 +33,13 @@ class RedditClient:
         json = req.json();
         return RedditPostListing(json['data'])
 
-    def fetch_access_token(self):
+    def __fetch_access_token(self):
         filename = 'reddit_access_token'
-        access_token = self.fetch_access_token_from_file(filename)
+        access_token = self.__fetch_access_token_from_file(filename)
         if access_token is not None:
             return access_token
 
-        r = self.fetch_access_token_from_url()
+        r = self.__fetch_access_token_from_url()
         access_token = r[0]
         exp_time = r[1]
 
@@ -48,7 +48,7 @@ class RedditClient:
 
         return access_token
 
-    def fetch_access_token_from_file(self, path):
+    def __fetch_access_token_from_file(self, path):
         if not os.path.isfile(path):
             return None
 
@@ -64,7 +64,7 @@ class RedditClient:
 
             return access_token
 
-    def fetch_access_token_from_url(self):
+    def __fetch_access_token_from_url(self):
         auth_url = 'https://www.reddit.com/api/v1/access_token'
         req = requests.post(auth_url,
                       auth=HTTPBasicAuth(self.client_id, self.client_secret),

@@ -2,7 +2,7 @@ from datetime import datetime
 from mysql import Article
 from config import ConfigClass
 
-def go():    
+def go():
     fetch_reddit_stuff()
     fetch_hacker_news_stuff()
 
@@ -44,5 +44,4 @@ def print_msg(msg):
     print(d + ': ' + msg)
 
 if __name__ == '__main__':
-    import pdb; pdb.set_trace()
     go()

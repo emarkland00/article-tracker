@@ -69,3 +69,6 @@ config.ini
 
 # Ignore virtual environment	
 env/*
+
+# peewee stuff
+peewee.db

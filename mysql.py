@@ -28,13 +28,17 @@ def init(db_instance):
         print "Config file missing section for mysql"
         return None
 
-    db_instance = MySQLDatabase(mysql_config.db_name, host=mysql_config.host, user=mysql_config.username, passwd=mysql_config.password)
+    db_instance = MySQLDatabase(
+        mysql_config['db_name'],
+        host=mysql_config['host'],
+        user=mysql_config['username'],
+        passwd=mysql_config['password'])
     db_instance.connect()
 
     # Auto generate tables needed for this operation (if they don't exist)
     if Article.table_exists() is False:
         Article.create_table()
 
-    return db_config
+    return db_instance
 
 __MYSQL_DB__ = init(__MYSQL_DB__)

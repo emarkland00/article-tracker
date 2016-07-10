@@ -3,14 +3,9 @@ from requests.auth import HTTPBasicAuth
 from config import ConfigClass
 from datetime import datetime, timedelta
 from mysql import Article
+from reddit import *
 import os.path
-
-class RedditClientError(Exception):
-    def __init__(self, value):
-        self.value = value
-
-    def __str__(self):
-        return repr(self.value)
+from RedditClientError import RedditClientError
 
 class RedditClient:
     def __init__(self):
@@ -28,7 +23,10 @@ class RedditClient:
 
     def get_liked_posts(self):
         url = '{1}/user/{0}/liked/.json'.format(self.username, self.base_url)
-        headers = { 'User-Agent': self.user_agent, 'Authorization': 'bearer ' + self.access_token }
+        headers = {
+            'User-Agent': self.user_agent,
+            'Authorization': 'bearer ' + self.access_token
+        }
         req = requests.get(url, headers=headers)
         json = req.json();
         return RedditPostListing(json['data'])
@@ -76,63 +74,3 @@ class RedditClient:
         expires = json["expires_in"]
         exp_time = datetime.now() + timedelta(seconds=expires)
         return (access_token, exp_time)
-
-class RedditPostDetails:
-    def __init__(self, json):
-        self.id = json['id']
-        self.subreddit = json['subreddit']
-        self.title = json['title']
-        self.domain = json['domain']
-        self.author = json['author']
-        self.created_utc = json['created_utc']
-        self.selftext_html = json['selftext_html']
-        self.selftext = json['selftext']
-        self.url = json['url']
-        self.timestamp = datetime.now()
-
-    def is_self_article(self):
-        return self.selftext == None
-
-class RedditPost:
-    def __init__(self, json):
-        self.raw = json
-        self.kind = json['kind']
-        self.data = RedditPostDetails(json['data'])
-
-    def to_article(self):
-        return { 'article_key': self.data.id, 'name': self.data.title, 'url': self.data.url, 'source': 'reddit', 'timestamp': self.data.timestamp }
-
-class RedditPostListing:
-    def __init__(self, json):
-        self.raw = json
-        self.modhash = json['modhash']
-        self.raw_children = [RedditPost(j) for j in json['children']]
-        self.children = self.raw_children
-
-    def filter_by_new_listings(self):
-        keys = [c.data.id for c in self.children]
-        results = Article.select().where(Article.article_key << keys)
-        existing_keys = [r.article_key for r in results]
-        self.children = [c for c in self.children if c.data.id not in existing_keys]
-        return self
-
-    def filter_by_subreddit(self, *subreddits):
-        return RedditFilter.by_subreddit(self.children, subreddits)
-
-    def filter_by_author(self, *authors):
-        return RedditFilter.by_author(authors)
-
-class RedditFilter:
-    @staticmethod
-    def by_subreddit(children, *subreddits):
-        subs = subreddits[0]
-        for c in children:
-            if c.data.subreddit in subs:
-                yield c
-
-    @staticmethod
-    def by_author(children, *authors):
-        a = authors[0]
-        for c in children:
-            if c.data.author in a:
-                yield c

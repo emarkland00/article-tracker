@@ -2,6 +2,9 @@ from datetime import datetime
 from mysql import Article
 from config import ConfigClass
 
+def config_init():
+    # specify  where the config file is found
+    
 def go():
     fetch_reddit_stuff()
     fetch_hacker_news_stuff()

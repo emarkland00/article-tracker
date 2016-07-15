@@ -1,10 +1,15 @@
 from datetime import datetime
-from mysql import Article
 from config import ConfigClass
+import sys
 
 def config_init():
-    # specify  where the config file is found
-    
+    filename = 'config.ini'
+    import pdb; pdb.set_trace()
+    if len(sys.argv) == 2:
+        filename = sys.argv[1]
+
+    ConfigClass.init(filename)
+
 def go():
     fetch_reddit_stuff()
     fetch_hacker_news_stuff()
@@ -47,4 +52,9 @@ def print_msg(msg):
     print(d + ': ' + msg)
 
 if __name__ == '__main__':
+    config_init()
+
+    # import other stuff
+    from mysql import Article
+
     go()

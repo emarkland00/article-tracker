@@ -25,13 +25,15 @@ class ConfigClass:
     # The name of the config file to search for
     FILENAME = 'config.ini'
 
+    @staticmethod
+    def init(filename):
+        ConfigClass.__INST__ = ConfigClass.__ConfigInstance(filename)
+
     def __init__(self):
-        if ConfigClass.__INST__:
-            self.instance = ConfigClass.__INST__.instance
-        else:
-            ConfigClass.__INST__ = ConfigClass.__ConfigInstance(ConfigClass.FILENAME)
-            if ConfigClass.__INST__:
-                self.instance = ConfigClass.__INST__.instance
+        if ConfigClass.__INST__ is None:
+            raise ValueError('Need to instantiate config.ini via ConfigClass.init()')
+
+        self.instance = ConfigClass.__INST__.instance
 
     def __get_section_values(self, section_name, section_keys):
         if not self.instance or not self.instance.has_section(section_name):

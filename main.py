@@ -4,7 +4,6 @@ import sys
 
 def config_init():
     filename = 'config.ini'
-    import pdb; pdb.set_trace()
     if len(sys.argv) == 2:
         filename = sys.argv[1]
 
@@ -17,7 +16,7 @@ def go():
 def fetch_reddit_stuff():
     from reddit import RedditClient
     print_msg("getting reddit stuff")
-    client = RedditClient()
+    client = RedditClient.RedditClient()
     if not client:
         print "Failed to load up reddit client"
         return

@@ -3,9 +3,9 @@ from requests.auth import HTTPBasicAuth
 from config import ConfigClass
 from datetime import datetime, timedelta
 from mysql import Article
-from reddit import *
 import os.path
 from RedditClientError import RedditClientError
+from RedditPostListing import RedditPostListing
 
 class RedditClient:
     def __init__(self):
@@ -35,6 +35,7 @@ class RedditClient:
         filename = 'reddit_access_token'
         access_token = self.__fetch_access_token_from_file(filename)
         if access_token is not None:
+
             return access_token
 
         r = self.__fetch_access_token_from_url()

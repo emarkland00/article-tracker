@@ -1,3 +1,5 @@
+from datetime import datetime
+
 class RedditPostDetails:
     def __init__(self, json):
         self.id = json['id']

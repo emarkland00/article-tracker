@@ -1,4 +1,5 @@
 from RedditPost import RedditPost
+from mysql import Article
 
 class RedditPostListing:
     def __init__(self, json):

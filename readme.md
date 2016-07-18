@@ -1,4 +1,4 @@
-This program is designed to manage a bread of articles read over time.
+This script is used to manage a trail of articles read over time.
 
 
 Requires a config.ini file. Below are some sections for configuration

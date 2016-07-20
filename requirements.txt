@@ -2,3 +2,4 @@ requests==2.10.0
 configparser==3.5.0
 peewee==2.8.1
 PyMySQL==0.7.5
+argparse==1.4.0

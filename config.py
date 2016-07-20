@@ -1,37 +1,52 @@
-import configparser
+from configparser import ConfigParser
+import os
 
-class ConfigClass():
-    parser = None
-    
+class ConfigClass:
+    class __ConfigInstance:
+        """
+        An internal container used to manage the config instance
+        """
+        def __init__(self, filename):
+            self.filename = filename
+            self.instance = self.__get_instance()
+
+        def __get_instance(self):
+            # Check that the config file exists before creating instance
+            if not os.path.isfile(self.filename):
+                return None
+
+            p = ConfigParser()
+            p.read(self.filename)
+            return p
+
+    # The singleton used to hold the config instance
+    __INST__ = None
+
+    # The name of the config file to search for
+    FILENAME = 'config.ini'
+
+    @staticmethod
+    def init(filename):
+        ConfigClass.__INST__ = ConfigClass.__ConfigInstance(filename)
+
     def __init__(self):
-        ConfigClass.init()
-        
-    @staticmethod
-    def init():
-        if ConfigClass.parser is None:
-            ConfigClass.parser = configparser.ConfigParser()
-            filename = 'config.ini'  
-            ConfigClass.parser.read(filename) 
-            
-    @staticmethod
-    def fetchParam(section, key):
-        return ConfigClass.parser.get(section, key)
-            
+        if ConfigClass.__INST__ is None:
+            raise ValueError('Need to instantiate config.ini via ConfigClass.init()')
+
+        self.instance = ConfigClass.__INST__.instance
+
+    def __get_section_values(self, section_name, section_keys):
+        if not self.instance or not self.instance.has_section(section_name):
+            return None
+
+        fn = lambda x: self.instance.get(section_name, x)
+        return { k.lower():fn(k) for k in section_keys }
+        # find out command to check if section exists in config file
+
     def get_reddit_config(self):
-        section = 'reddit'
-        c = ConfigClass()
-        c.base_url = ConfigClass.fetchParam(section, 'BASE_URL')
-        c.username = ConfigClass.fetchParam(section, 'USERNAME')
-        c.user_agent = ConfigClass.fetchParam(section, 'USER_AGENT')
-        c.client_id = ConfigClass.fetchParam(section, 'CLIENT_ID')
-        c.client_secret = ConfigClass.fetchParam(section, 'CLIENT_SECRET')
-        return c
-    
+        keys = [ 'BASE_URL', 'USERNAME', 'USER_AGENT', 'CLIENT_ID', 'CLIENT_SECRET' ]
+        return self.__get_section_values('reddit', keys)
+
     def get_mysql_config(self):
-        section = 'mysql'
-        c = ConfigClass()
-        c.host = ConfigClass.fetchParam(section, 'host')
-        c.username = ConfigClass.fetchParam(section, 'username')
-        c.password = ConfigClass.fetchParam(section, 'password')
-        c.db_name = ConfigClass.fetchParam(section, 'db_name')
-        return c
+        keys = [ 'host', 'username', 'password', 'db_name' ]
+        return self.__get_section_values('mysql', keys)

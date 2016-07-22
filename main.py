@@ -14,9 +14,9 @@ def go():
     fetch_hacker_news_stuff()
 
 def fetch_reddit_stuff():
-    from reddit import RedditClient
+    from reddit import RedditClient as r
     print_msg("getting reddit stuff")
-    client = RedditClient.RedditClient()
+    client = r.RedditClient()
     if not client:
         print "Failed to load up reddit client"
         return
@@ -35,9 +35,10 @@ def fetch_reddit_stuff():
     print_msg("finished getting reddit stuff!")
 
 def fetch_hacker_news_stuff():
-    client = HackerNewsClient()
+    from hackernews import HackerNewsClient as hn
+    client = hn.HackerNewsClient()
     client.login()
-    
+
     """
     HACKER NEWS
 

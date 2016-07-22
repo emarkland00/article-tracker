@@ -10,7 +10,7 @@ def config_init():
     ConfigClass.init(filename)
 
 def go():
-    fetch_reddit_stuff()
+    #fetch_reddit_stuff()
     fetch_hacker_news_stuff()
 
 def fetch_reddit_stuff():
@@ -21,7 +21,7 @@ def fetch_reddit_stuff():
         print "Failed to load up reddit client"
         return
 
-    filtered_posts = client.get_liked_posts().filter_by_new_listings().filter_by_subreddit(u'technology')
+    filtered_posts = client.get_liked_posts().filter_by_new_listings().filter_by_subreddit(u'technology',u'BlackPeopleTwitter').posts()
 
     for post in filtered_posts:
         art = post.to_article()
@@ -35,6 +35,9 @@ def fetch_reddit_stuff():
     print_msg("finished getting reddit stuff!")
 
 def fetch_hacker_news_stuff():
+    client = HackerNewsClient()
+    client.login()
+    
     """
     HACKER NEWS
 
@@ -42,7 +45,6 @@ def fetch_hacker_news_stuff():
 
     requires user session cookie...
     """
-    pass
 
 
 def print_msg(msg):

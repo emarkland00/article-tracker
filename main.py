@@ -37,7 +37,7 @@ def fetch_reddit_stuff():
 def fetch_hacker_news_stuff():
     from hackernews import HackerNewsClient as hn
     client = hn.HackerNewsClient()
-    client.login()
+    articles = client.fetch_upvoted_articles()
 
     """
     HACKER NEWS

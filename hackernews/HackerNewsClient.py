@@ -1,5 +1,8 @@
 import requests
 from config import ConfigClass
+from lxml import etree
+from io import StringIO
+import urlparse
 
 class HackerNewsClient:
     def __init__(self):
@@ -12,8 +15,12 @@ class HackerNewsClient:
         self.password = hn_config['password']
         self.base_url = hn_config['base_url']
         self.user_agent = hn_config['user_agent']
+        self.session = None
 
     def __login(self):
+        if self.session:
+            return
+
         s = requests.session()
         login = s.get(self.base_url, verify=False, headers={'User-Agent': self.user_agent })
 
@@ -29,23 +36,40 @@ class HackerNewsClient:
             "acct": self.username,
             "pw": self.password
         }
-        data = "&".join([ "{0}={1}".format(k,v) for k,v in vals ])
+        data = "&".join([ "{0}={1}".format(key,vals[key]) for key in vals ])
 
         res = s.post(self.base_url + '/login', verify=False, headers=headers, data=data)
-        t = res.text
+        self.session = s
 
     def fetch_upvoted_articles(self):
-        url = '{0}/saved?id={1}'.format(self.base_url, self.username)
+        self.__login()
+        arts = []
+        url = '{0}/upvoted?id={1}'.format(self.base_url, self.username)
         response = self.session.get(url)
-        tree = html.fromstring(response.text)
-        tables = tree.xpath("//table")
-        for t in tables:
-            post = t.xpath("//tr[contains('@class', 'athing')]")
-            if len(post) is 0:
-                continue
+        parser = etree.HTMLParser()
+        tree = etree.parse(StringIO(response.text), parser)
+        rows = tree.xpath(".//tr[@class='athing']")
+        for row in rows:
+            #import pdb; pdb.set_trace()
+            header = row.xpath(".//td[@class='title']/a")[0]
+            link = header.attrib['href']
+            link = (self.base_url + "/" + link) if not bool(urlparse.urlparse(link).netloc) else link
+            title = header.text
+            author = None
+            timestamp = None
+            author_row = row.xpath(".//following-sibling::tr//td[@class='subtext']")
+            if author_row:
+                ar = author_row[0]
+                author = ar.xpath(".//a[@class='hnuser']")[0].text
+                days_ago = ar.xpath(".//span[@class='age']//a")[0].text
 
-            header = post.xpath("//td[@class='title']/a")
-            link = header.attr('href')
-            title = header.value
-            author = post.xpath("//span").value
+            arts.append({
+                "link": link,
+                "title": title,
+                "author": author,
+                "timestamp": timestamp
+            })
+
+        return arts
+
     # maybe get reports for the last 30 DAYS?

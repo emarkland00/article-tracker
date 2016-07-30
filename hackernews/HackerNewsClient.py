@@ -51,7 +51,7 @@ class HackerNewsClient:
         tree = etree.parse(StringIO(response.text), parser)
         rows = tree.xpath(".//tr[@class='athing']")
         for row in rows:
-            id = int(row.attrib['id'])
+            id = row.attrib['id']
             header = row.xpath(".//td[@class='title']/a")[0]
             link = header.attrib['href']
             link = (self.base_url + "/" + link) if not bool(urlparse.urlparse(link).netloc) else link

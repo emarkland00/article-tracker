@@ -42,7 +42,7 @@ class HackerNewsClient:
         res = s.post(self.base_url + '/login', verify=False, headers=headers, data=data)
         self.session = s
 
-    def fetch_upvoted_articles(self, days_limit=None):
+    def fetch_upvoted_posts(self, days_limit=None):
         self.__login()
         arts = []
         url = '{0}/upvoted?id={1}'.format(self.base_url, self.username)

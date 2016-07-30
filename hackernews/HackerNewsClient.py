@@ -3,6 +3,7 @@ from config import ConfigClass
 from lxml import etree
 from io import StringIO
 import urlparse
+import datetime
 
 class HackerNewsClient:
     def __init__(self):
@@ -50,7 +51,6 @@ class HackerNewsClient:
         tree = etree.parse(StringIO(response.text), parser)
         rows = tree.xpath(".//tr[@class='athing']")
         for row in rows:
-            #import pdb; pdb.set_trace()
             header = row.xpath(".//td[@class='title']/a")[0]
             link = header.attrib['href']
             link = (self.base_url + "/" + link) if not bool(urlparse.urlparse(link).netloc) else link
@@ -62,6 +62,10 @@ class HackerNewsClient:
                 ar = author_row[0]
                 author = ar.xpath(".//a[@class='hnuser']")[0].text
                 days_ago = ar.xpath(".//span[@class='age']//a")[0].text
+                day_parts = days_ago.split()
+                timestamp = datetime.date.today()
+                if day_parts[1] in ['day', 'days']:
+                    timestamp -= datetime.timedelta(days=int(day_parts[0]))
 
             arts.append({
                 "link": link,

@@ -42,7 +42,7 @@ class HackerNewsClient:
         res = s.post(self.base_url + '/login', verify=False, headers=headers, data=data)
         self.session = s
 
-    def fetch_upvoted_articles(self):
+    def fetch_upvoted_articles(self, days_limit=None):
         self.__login()
         arts = []
         url = '{0}/upvoted?id={1}'.format(self.base_url, self.username)
@@ -51,6 +51,7 @@ class HackerNewsClient:
         tree = etree.parse(StringIO(response.text), parser)
         rows = tree.xpath(".//tr[@class='athing']")
         for row in rows:
+            id = int(row.attrib['id'])
             header = row.xpath(".//td[@class='title']/a")[0]
             link = header.attrib['href']
             link = (self.base_url + "/" + link) if not bool(urlparse.urlparse(link).netloc) else link
@@ -65,15 +66,17 @@ class HackerNewsClient:
                 day_parts = days_ago.split()
                 timestamp = datetime.date.today()
                 if day_parts[1] in ['day', 'days']:
+                    days_ago = int(day_parts[0])
+                    if days_limit and days_ago > days_limit:
+                        continue
                     timestamp -= datetime.timedelta(days=int(day_parts[0]))
 
             arts.append({
                 "link": link,
                 "title": title,
                 "author": author,
+                "id": id,
                 "timestamp": timestamp
             })
 
         return arts
-
-    # maybe get reports for the last 30 DAYS?

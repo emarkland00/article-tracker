@@ -25,12 +25,7 @@ def fetch_reddit_stuff():
 
     for post in filtered_posts:
         art = post.to_article()
-        Article.create(
-            name=art['name'],
-            url=art['url'],
-            source=art['source'],
-            article_key=art['article_key'],
-            timestamp=art['timestamp'])
+        create_article(art['name'], art['url'], 'reddit', art['article_key'], art['timestamp'])
 
     print_msg("finished getting reddit stuff!")
 
@@ -38,15 +33,18 @@ def fetch_hacker_news_stuff():
     from hackernews import HackerNewsClient as hn
     client = hn.HackerNewsClient()
     articles = client.fetch_upvoted_articles()
+    for a in articles:
+        create_article(a['title'], a['link'], 'hacker news', a['id'], a['timestamp'])
+    import pdb; pdb.set_trace()
 
-    """
-    HACKER NEWS
-
-    https://news.ycombinator.com/saved?id=sol7117
-
-    requires user session cookie...
-    """
-
+def create_article(name, url, source, article_key, timestamp):
+    return Article.create(
+        name=name,
+        url=url,
+        source=source,
+        article_key=article_key,
+        timestamp=timestamp
+    )
 
 def print_msg(msg):
     date = datetime.now()

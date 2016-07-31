@@ -52,5 +52,5 @@ class ConfigClass:
         return self.__get_section_values('hacker_news', keys)
 
     def get_reddit_config(self):
-        keys = [ 'BASE_URL', 'USERNAME', 'USER_AGENT', 'CLIENT_ID', 'CLIENT_SECRET' ]
+        keys = [ 'BASE_URL', 'USERNAME', 'USER_AGENT', 'CLIENT_ID', 'CLIENT_SECRET', 'SUB_REDDITS' ]
         return self.__get_section_values('reddit', keys)

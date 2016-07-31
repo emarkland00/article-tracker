@@ -10,7 +10,7 @@ def config_init():
     ConfigClass.init(filename)
 
 def go():
-    #fetch_reddit_stuff()
+    fetch_reddit_stuff()
     fetch_hacker_news_stuff()
 
 def fetch_reddit_stuff():
@@ -21,9 +21,9 @@ def fetch_reddit_stuff():
         print "Failed to load up reddit client"
         return
 
-    filtered_posts = client.get_liked_posts().filter_by_subreddit(u'technology',u'BlackPeopleTwitter').posts()
-
+    filtered_posts = client.get_liked_posts()
     articles = []
+
     for post in filtered_posts:
         art = post.as_json()
         articles.append(create_article(art['name'], art['url'], 'reddit', art['article_key'], art['timestamp']))
@@ -33,6 +33,7 @@ def fetch_reddit_stuff():
 
 def fetch_hacker_news_stuff():
     from hackernews import HackerNewsClient as hn
+    print_msg("getting hacker news stuff")
     client = hn.HackerNewsClient()
     posts = client.fetch_upvoted_posts()
     articles = [

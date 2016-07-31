@@ -23,7 +23,7 @@ class HackerNewsClient:
             return
 
         s = requests.session()
-        login = s.get(self.base_url, verify=False, headers={'User-Agent': self.user_agent })
+        login = s.get(self.base_url, headers={'User-Agent': self.user_agent })
 
         headers = {
             'User-Agent': self.user_agent,
@@ -39,7 +39,7 @@ class HackerNewsClient:
         }
         data = "&".join([ "{0}={1}".format(key,vals[key]) for key in vals ])
 
-        res = s.post(self.base_url + '/login', verify=False, headers=headers, data=data)
+        res = s.post(self.base_url + '/login', headers=headers, data=data)
         self.session = s
 
     def fetch_upvoted_posts(self, days_limit=None):

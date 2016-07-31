@@ -44,3 +44,6 @@ You're all set.
 ```bash
 python main.py [<directory/path/to/config.ini>] # leave blank if config.ini in current directory
 ```
+
+## Example use case
+<a href='https://www.errolmarkland.com' target='_blank'>My site</a>

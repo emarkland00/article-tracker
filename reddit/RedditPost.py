@@ -6,11 +6,10 @@ class RedditPost:
         self.kind = json['kind']
         self.data = RedditPostDetails(json['data'])
 
-    def to_article(self):
+    def as_json(self):
         return {
             'article_key': self.data.id,
             'name': self.data.title,
             'url': self.data.url,
-            'source': 'reddit',
             'timestamp': self.data.timestamp
         }

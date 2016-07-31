@@ -43,10 +43,14 @@ class ConfigClass:
         return { k.lower():fn(k) for k in section_keys }
         # find out command to check if section exists in config file
 
-    def get_reddit_config(self):
-        keys = [ 'BASE_URL', 'USERNAME', 'USER_AGENT', 'CLIENT_ID', 'CLIENT_SECRET' ]
-        return self.__get_section_values('reddit', keys)
-
     def get_mysql_config(self):
         keys = [ 'host', 'username', 'password', 'db_name' ]
         return self.__get_section_values('mysql', keys)
+
+    def get_hacker_news_config(self):
+        keys = [ 'BASE_URL', 'USERNAME', 'PASSWORD', 'USER_AGENT' ]
+        return self.__get_section_values('hacker_news', keys)
+
+    def get_reddit_config(self):
+        keys = [ 'BASE_URL', 'USERNAME', 'USER_AGENT', 'CLIENT_ID', 'CLIENT_SECRET', 'SUB_REDDITS' ]
+        return self.__get_section_values('reddit', keys)

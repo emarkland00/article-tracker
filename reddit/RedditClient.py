@@ -8,6 +8,9 @@ from RedditClientError import RedditClientError
 from RedditPostListing import RedditPostListing
 
 class RedditClient:
+    __AUTH_URL__ = 'https://www.reddit.com/api/v1/access_token'
+    __FILE_NAME__ = 'reddit_access_token'
+
     def __init__(self):
         reddit_config = ConfigClass().get_reddit_config()
         if not reddit_config:
@@ -19,6 +22,9 @@ class RedditClient:
         self.username = reddit_config['username']
         self.client_id = reddit_config['client_id']
         self.client_secret = reddit_config['client_secret']
+        self.sub_reddits = None
+        if 'sub_reddits' in reddit_config:
+            self.sub_reddits = reddit_config["sub_reddits"].split()
         self.access_token = self.__fetch_access_token()
 
     def get_liked_posts(self):
@@ -29,20 +35,22 @@ class RedditClient:
         }
         req = requests.get(url, headers=headers)
         json = req.json();
-        return RedditPostListing(json['data'])
+        posts = RedditPostListing(json['data']).children
+        if self.sub_reddits:
+            posts = [ l for l in posts if l.data.subreddit in self.sub_reddits ]
+
+        return posts
 
     def __fetch_access_token(self):
-        filename = 'reddit_access_token'
-        access_token = self.__fetch_access_token_from_file(filename)
+        access_token = self.__fetch_access_token_from_file(RedditClient.__FILE_NAME__)
         if access_token is not None:
-
             return access_token
 
         r = self.__fetch_access_token_from_url()
         access_token = r[0]
         exp_time = r[1]
 
-        with open(filename, 'w') as f:
+        with open(RedditClient.__FILE_NAME__, 'w') as f:
             f.write(access_token + '|' + str(exp_time))
 
         return access_token
@@ -64,8 +72,7 @@ class RedditClient:
             return access_token
 
     def __fetch_access_token_from_url(self):
-        auth_url = 'https://www.reddit.com/api/v1/access_token'
-        req = requests.post(auth_url,
+        req = requests.post(RedditClient.__AUTH_URL__,
                       auth=HTTPBasicAuth(self.client_id, self.client_secret),
                       headers={'User-Agent': self.user_agent},
                       data={'grant_type':'client_credentials'})

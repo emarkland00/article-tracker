@@ -65,7 +65,7 @@ local.properties
 
 # Ignore config file
 config.ini
-*_access_token
+reddit_access_token
 
 # Ignore virtual environment	
 env/*

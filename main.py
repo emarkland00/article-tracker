@@ -28,6 +28,7 @@ def fetch_reddit_stuff():
         art = post.as_json()
         articles.append(create_article(art['name'], art['url'], 'reddit', art['article_key'], art['timestamp']))
 
+    articles = filter_by_new_listings(articles)
     save_articles(articles)
     print_msg("finished getting reddit stuff!")
 

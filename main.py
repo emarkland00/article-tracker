@@ -47,6 +47,9 @@ def fetch_hacker_news_stuff():
     print_msg("finished getting hacker news stuff!")
 
 def filter_by_new_listings(articles):
+    if not articles:
+        return []
+
     source = articles[0].source
     ids = [ a.article_key for a in articles ]
     existing = Article.find_all_by_source_and_ids(source, ids)

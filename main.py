@@ -11,7 +11,6 @@ def config_init():
         filename = sys.argv[1]
 
     # if loaded config successfully, then we can load mysql
-    import pdb; pdb.set_trace()
     if ConfigClass.init(filename):
         mysql_init()
     else:

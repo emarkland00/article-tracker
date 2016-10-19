@@ -24,7 +24,7 @@ class RedditClient:
         self.client_secret = reddit_config['client_secret']
         self.sub_reddits = None
         if 'sub_reddits' in reddit_config:
-            self.sub_reddits = reddit_config["sub_reddits"].split()
+            self.sub_reddits = [ s.decode('utf-8') for s in reddit_config["sub_reddits"].split(',') ]
         self.access_token = self.__fetch_access_token()
 
     def get_liked_posts(self):

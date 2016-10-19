@@ -1,12 +1,19 @@
 from peewee import MySQLDatabase, Model, PrimaryKeyField, CharField, DateTimeField
 from config import ConfigClass
 
-__MYSQL_DB__ = None
+__MYSQL_DB__ = MySQLDatabase(None)
 
 class MySQLModel(Model):
     """A base model that will use our MySQL database"""
     class Meta:
         database = __MYSQL_DB__
+
+    @classmethod
+    def has_db_configured(cls):
+        """
+        Checks whether if the db has been configured
+        """
+        return cls._meta.database.get_conn().open;
 
 class Article(MySQLModel):
     """A generic container for holding information"""
@@ -19,6 +26,9 @@ class Article(MySQLModel):
 
     @classmethod
     def find_all_by_source_and_ids(cls, source, ids):
+        if not super(Article, cls).has_db_configured():
+            return []
+
         if not source and ids:
             return []
 
@@ -26,6 +36,10 @@ class Article(MySQLModel):
 
     @classmethod
     def bulk_insert(cls, articles):
+        if not super(Article, cls).has_db_configured():
+            return
+
+        # add logic to check if instance has been set
         arts = [ {
             "name": a.name,
             "url": a.url,
@@ -34,30 +48,21 @@ class Article(MySQLModel):
             "timestamp": a.timestamp
         } for a in articles ]
         with __MYSQL_DB__.atomic():
-            Article.insert_many(arts)
+            Article.insert_many(arts).execute()
 
-def init(db_instance):
-    # Check if we already have an instance to the database
-    if db_instance:
-        return db_instance
-
+def init():
     # Check that we have the details needed to connect to database
     mysql_config = ConfigClass().get_mysql_config()
     if not mysql_config:
-        print "Config file missing section for mysql"
-        return None
+        print "Config file missing section for [mysql]"
+    else:
+        # initialize database connection
+        __MYSQL_DB__.init(
+            mysql_config['db_name'],
+            host=mysql_config['host'],
+            user=mysql_config['username'],
+            passwd=mysql_config['password'])
 
-    db_instance = MySQLDatabase(
-        mysql_config['db_name'],
-        host=mysql_config['host'],
-        user=mysql_config['username'],
-        passwd=mysql_config['password'])
-    db_instance.connect()
-
-    # Auto generate tables needed for this operation (if they don't exist)
-    if not Article.table_exists():
-        Article.create_table()
-
-    return db_instance
-
-__MYSQL_DB__ = init(__MYSQL_DB__)
+        # Auto generate tables needed for this operation (if they don't exist)
+        if not Article.table_exists():
+            Article.create_table()

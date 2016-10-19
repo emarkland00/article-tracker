@@ -1,24 +1,34 @@
 from datetime import datetime
 from config import ConfigClass
+from mysql import Article, init as mysql_init
 import sys
+import itertools
+
 
 def config_init():
     filename = 'config.ini'
     if len(sys.argv) == 2:
         filename = sys.argv[1]
 
-    ConfigClass.init(filename)
+    # if loaded config successfully, then we can load mysql
+    if ConfigClass.init(filename):
+        mysql_init()
+    else:
+        print_msg("MySQL config needed before proceeding")
 
 def go():
-    fetch_reddit_stuff()
-    fetch_hacker_news_stuff()
+    if ConfigClass.has_config('reddit'):
+        fetch_reddit_stuff()
+
+    if ConfigClass.has_config('hacker_news'):
+        fetch_hacker_news_stuff()
 
 def fetch_reddit_stuff():
     from reddit import RedditClient as r
     print_msg("getting reddit stuff")
     client = r.RedditClient()
     if not client:
-        print "Failed to load up reddit client"
+        print_msg("Failed to load up reddit client")
         return
 
     filtered_posts = client.get_liked_posts()
@@ -36,22 +46,36 @@ def fetch_hacker_news_stuff():
     from hackernews import HackerNewsClient as hn
     print_msg("getting hacker news stuff")
     client = hn.HackerNewsClient()
+    if not client:
+        print_msg("Failed to load up hacker news client")
+        return
+
     posts = client.fetch_upvoted_posts()
-    articles = [
-        create_article(a['title'], a['link'], 'hacker news', a['id'], a['timestamp'])
-        for a
-        in posts
-    ]
+    articles = [ create_article(p['title'], p['link'], 'hacker news', p['id'], p['timestamp']) for p in posts ]
     articles = filter_by_new_listings(articles)
     save_articles(articles)
     print_msg("finished getting hacker news stuff!")
 
 def filter_by_new_listings(articles):
-    source = articles[0].source
-    ids = [ a.article_key for a in articles ]
-    existing = Article.find_all_by_source_and_ids(source, ids)
-    known = [ a.article_key for a in existing ]
-    return [ a for a in articles if a.article_key not in known ]
+    """
+    Filter articles by those not yet stored in the database
+    """
+    if not articles:
+        return []
+
+    results = articles
+
+    # must sort articles before grouping
+    source_key = lambda x: x.source
+    arts = sorted(articles, key=source_key)
+    for source, group in itertools.groupby(arts, key=source_key):
+        # filter by checking if IDs exist for the corresponding source
+        ids = [ g.article_key for g in group ]
+        existing = Article.find_all_by_source_and_ids(source, ids)
+        known = [ a.article_key for a in existing ]
+        results = [ r for r in results if r.article_key not in known ]
+
+    return results
 
 def save_articles(articles):
     if articles:
@@ -73,8 +97,4 @@ def print_msg(msg):
 
 if __name__ == '__main__':
     config_init()
-
-    # import other stuff
-    from mysql import Article
-
     go()

@@ -58,4 +58,8 @@ class ConfigClass:
 
     @staticmethod
     def has_config(config_name):
-        return ConfigClass.__INST__ and ConfigClass.__INST__.has_section(config_name)
+        if not ConfigClass.__INST__:
+            return False
+            
+        cfg = ConfigClass.__INST__.instance
+        return cfg and cfg.has_section(config_name)

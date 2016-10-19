@@ -13,8 +13,7 @@ class MySQLModel(Model):
         """
         Checks whether if the db has been configured
         """
-        import pdb; pdb.set_trace()
-        return True;
+        return cls._meta.database.get_conn().open;
 
 class Article(MySQLModel):
     """A generic container for holding information"""
@@ -27,7 +26,7 @@ class Article(MySQLModel):
 
     @classmethod
     def find_all_by_source_and_ids(cls, source, ids):
-        if not super(Article).has_db_configured():
+        if not super(Article, cls).has_db_configured():
             return []
 
         if not source and ids:
@@ -37,7 +36,7 @@ class Article(MySQLModel):
 
     @classmethod
     def bulk_insert(cls, articles):
-        if not super(Article).has_db_configured():
+        if not super(Article, cls).has_db_configured():
             return
 
         # add logic to check if instance has been set
@@ -52,8 +51,6 @@ class Article(MySQLModel):
             Article.insert_many(arts).execute()
 
 def init():
-    global __MYSQL_DB__
-
     # Check that we have the details needed to connect to database
     mysql_config = ConfigClass().get_mysql_config()
     if not mysql_config:

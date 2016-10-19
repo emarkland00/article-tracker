@@ -28,6 +28,7 @@ class ConfigClass:
     @staticmethod
     def init(filename):
         ConfigClass.__INST__ = ConfigClass.__ConfigInstance(filename)
+        return ConfigClass.__INST__.instance is not None
 
     def __init__(self):
         if ConfigClass.__INST__ is None:
@@ -44,7 +45,7 @@ class ConfigClass:
         # find out command to check if section exists in config file
 
     def get_mysql_config(self):
-        keys = [ 'host', 'username', 'password', 'db_name' ]
+        keys = [ 'HOST', 'USERNAME', 'PASSWORD', 'DB_NAME' ]
         return self.__get_section_values('mysql', keys)
 
     def get_hacker_news_config(self):
@@ -54,3 +55,7 @@ class ConfigClass:
     def get_reddit_config(self):
         keys = [ 'BASE_URL', 'USERNAME', 'USER_AGENT', 'CLIENT_ID', 'CLIENT_SECRET', 'SUB_REDDITS' ]
         return self.__get_section_values('reddit', keys)
+
+    @staticmethod
+    def has_config(config_name):
+        return ConfigClass.__INST__ and ConfigClass.__INST__.has_section(config_name)

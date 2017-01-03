@@ -51,4 +51,4 @@ python main.py [<directory/path/to/config.ini>] # leave blank if config.ini in c
 ```
 
 ## Example use case
-<a href='https://www.errolmarkland.com' target='_blank'>My site</a>
+<a href='https://www.errolmarkland.com' target='_blank'>My site</a> (No longer primarily used on my site, as of Nov. 2016. <a href='https://getpocket.com' target='_blank'>Pocket</a> does everything I'd like. However, I will still keep this going.)

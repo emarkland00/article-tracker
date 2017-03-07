@@ -42,7 +42,6 @@ class ConfigClass:
 
         fn = lambda x: self.instance.get(section_name, x)
         return { k.lower():fn(k) for k in section_keys }
-        # find out command to check if section exists in config file
 
     def get_mysql_config(self):
         keys = [ 'HOST', 'USERNAME', 'PASSWORD', 'DB_NAME' ]
@@ -60,6 +59,6 @@ class ConfigClass:
     def has_config(config_name):
         if not ConfigClass.__INST__:
             return False
-            
+
         cfg = ConfigClass.__INST__.instance
         return cfg and cfg.has_section(config_name)

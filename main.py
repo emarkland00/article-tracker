@@ -4,19 +4,7 @@ from mysql import Article, init as mysql_init
 import sys
 import itertools
 
-
-def config_init():
-    filename = 'config.ini'
-    if len(sys.argv) == 2:
-        filename = sys.argv[1]
-
-    # if loaded config successfully, then we can load mysql
-    if ConfigClass.init(filename):
-        mysql_init()
-    else:
-        print_msg("MySQL config needed before proceeding")
-
-def go():
+def track_articles():
     if ConfigClass.has_config('reddit'):
         fetch_reddit_stuff()
 
@@ -96,5 +84,17 @@ def print_msg(msg):
     print(d + ': ' + msg)
 
 if __name__ == '__main__':
-    config_init()
-    go()
+    filename = 'config.ini'
+    if len(sys.argv) == 2:
+        filename = sys.argv[1]
+
+    if not ConfigClass.init(filename):
+        print_msg("Unable to find load config file", filename)
+        exit()
+
+    services = ConfigClass.get_services()
+    if not services:
+        print_msg("No services found. Can't find track articles if no services are configured")
+        exit()
+
+    track_articles(services)

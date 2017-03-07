@@ -6,6 +6,9 @@ import urlparse
 import datetime
 
 class HackerNewsClient:
+    KEYS = [ 'BASE_URL', 'USERNAME', 'PASSWORD', 'USER_AGENT' ]
+    TRACKER_NAME = 'hacker_news'
+    
     def __init__(self):
         hn_config = ConfigClass().get_hacker_news_config()
         if not hn_config:
@@ -41,6 +44,11 @@ class HackerNewsClient:
 
         res = s.post(self.base_url + '/login', headers=headers, data=data)
         self.session = s
+
+    def __get_articles(self):
+        posts = self.fetch_upvoted_posts()
+        articles = [ create_article(p['title'], p['link'], 'hacker news', p['id'], p['timestamp']) for p in posts ]
+        return articles
 
     def fetch_upvoted_posts(self, days_limit=None):
         self.__login()

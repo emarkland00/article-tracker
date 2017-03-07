@@ -11,10 +11,12 @@ from RedditPostListing import RedditPostListing
 class RedditClient(TrackerClient):
     __AUTH_URL__ = 'https://www.reddit.com/api/v1/access_token'
     __FILE_NAME__ = 'reddit_access_token'
+    TRACKER_NAME = 'reddit'
+    KEYS = [ 'BASE_URL', 'USERNAME', 'USER_AGENT', 'CLIENT_ID', 'CLIENT_SECRET', 'SUB_REDDITS' ]
 
     def __init__(self, json_config):
         super(RedditClient, self).__init__(json_config)
-        if not reddit_config:
+        if not json_config:
             return
 
         self.base_url = json_config['base_url']
@@ -28,10 +30,9 @@ class RedditClient(TrackerClient):
         self.access_token = self.__fetch_access_token()
         self.__configured = True
 
-    def get_articles(self):
+    def __get_articles(self):
         filtered_posts = self.get_liked_posts()
         articles = []
-
         for post in filtered_posts:
             art = post.as_json()
             articles.append(self.create_article(art['name'], art['url'], 'reddit', art['article_key'], art['timestamp']))

@@ -3,46 +3,7 @@ from config import ConfigClass
 from mysql import Article, init as mysql_init
 import sys
 import itertools
-
-def track_articles():
-    if ConfigClass.has_config('reddit'):
-        fetch_reddit_stuff()
-
-    if ConfigClass.has_config('hacker_news'):
-        fetch_hacker_news_stuff()
-
-def fetch_reddit_stuff():
-    from reddit import RedditClient as r
-    print_msg("getting reddit stuff")
-    client = r.RedditClient()
-    if not client:
-        print_msg("Failed to load up reddit client")
-        return
-
-    filtered_posts = client.get_liked_posts()
-    articles = []
-
-    for post in filtered_posts:
-        art = post.as_json()
-        articles.append(create_article(art['name'], art['url'], 'reddit', art['article_key'], art['timestamp']))
-
-    articles = filter_by_new_listings(articles)
-    save_articles(articles)
-    print_msg("finished getting reddit stuff!")
-
-def fetch_hacker_news_stuff():
-    from hackernews import HackerNewsClient as hn
-    print_msg("getting hacker news stuff")
-    client = hn.HackerNewsClient()
-    if not client:
-        print_msg("Failed to load up hacker news client")
-        return
-
-    posts = client.fetch_upvoted_posts()
-    articles = [ create_article(p['title'], p['link'], 'hacker news', p['id'], p['timestamp']) for p in posts ]
-    articles = filter_by_new_listings(articles)
-    save_articles(articles)
-    print_msg("finished getting hacker news stuff!")
+from clients.TrackerClient import TrackerClient
 
 def filter_by_new_listings(articles):
     """
@@ -69,21 +30,13 @@ def save_articles(articles):
     if articles:
         Article.bulk_insert(articles)
 
-def create_article(name, url, source, article_key, timestamp):
-    return Article(
-        name=name,
-        url=url,
-        source=source,
-        article_key=article_key,
-        timestamp=timestamp
-    )
-
 def print_msg(msg):
     date = datetime.now()
     d = date.strftime('%Y-%m-%d %I:%M:%S %p')
     print(d + ': ' + msg)
 
 if __name__ == '__main__':
+    # Load config
     filename = 'config.ini'
     if len(sys.argv) == 2:
         filename = sys.argv[1]
@@ -92,9 +45,14 @@ if __name__ == '__main__':
         print_msg("Unable to find load config file", filename)
         exit()
 
-    services = ConfigClass.get_services()
-    if not services:
-        print_msg("No services found. Can't find track articles if no services are configured")
-        exit()
+    # Get clients
+    clients = TrackerClient.get_clients(ConfigClass.get_instance())
+    if not clients:
+        print_msg("Unable to find any configured clients. exiting")
 
-    track_articles(services)
+    # Get articles
+    for c in clients:
+        articles = c.get_articles()
+        articles = filter_by_new_listings(articles)
+        save_articles(articles)
+        print_msg("finished getting {0} stuff!".format(c.TRACKER_NAME))

@@ -44,8 +44,11 @@ class Article(MySQLModel):
 
     @classmethod
     def bulk_insert(cls, articles):
+        if not articles:
+            return False
+
         if not super(Article, cls).has_db_configured():
-            return
+            return False
 
         arts = [ {
             "name": a.name,
@@ -54,8 +57,10 @@ class Article(MySQLModel):
             "article_key": a.article_key,
             "timestamp": a.timestamp
         } for a in articles ]
+
+
         with __MYSQL_DB__.atomic():
-            Article.insert_many(arts).execute()
+            return Article.insert_many(arts).execute()
 
     @classmethod
     def filter_by_new_listings(cls, articles):
@@ -78,11 +83,6 @@ class Article(MySQLModel):
             results = [ r for r in results if r.article_key not in known ]
 
         return results
-
-    @classmethod
-    def save_articles(cls, articles):
-        if articles:
-            Article.bulk_insert(articles)
 
 def init():
     # Check that we have the details needed to connect to database

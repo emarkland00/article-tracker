@@ -35,7 +35,6 @@ class TrackerClient(object):
         """
         Gets a list of article objects
         """
-        import pdb; pdb.set_trace()
         articles = self._get_articles()
         if not new_only:
             return articles

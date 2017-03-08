@@ -1,9 +1,7 @@
+import os.path
 import requests
 from requests.auth import HTTPBasicAuth
-from config import ConfigClass
 from datetime import datetime, timedelta
-
-import os.path
 from clients.TrackerClient import TrackerClient
 from RedditClientError import RedditClientError
 from RedditPostListing import RedditPostListing

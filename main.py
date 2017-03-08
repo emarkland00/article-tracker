@@ -2,8 +2,8 @@ from datetime import datetime
 from config import ConfigClass
 from mysql import Article, init as mysql_init
 import sys
-import itertools
-from clients.TrackerClient import TrackerClient
+
+from clients.TrackerClientFactory import TrackerClientFactory
 
 def filter_by_new_listings(articles):
     """
@@ -46,7 +46,7 @@ if __name__ == '__main__':
         exit()
 
     # Get clients
-    clients = TrackerClient.get_clients(ConfigClass.get_instance())
+    clients = TrackerClientFactory.get_clients(ConfigClass.get_instance())
     if not clients:
         print_msg("Unable to find any configured clients. exiting")
 

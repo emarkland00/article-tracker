@@ -1,7 +1,7 @@
-from config import ConfigClass
+import itertools
 from mysql import Article
 
-class TrackerClient:
+class TrackerClient(object):
     """
     The base class for an article tracking client
     - json_config: The config needed to allow the client to run
@@ -19,7 +19,7 @@ class TrackerClient:
         """
         return self.__configured
 
-    def create_article(name, url, source, article_key, timestamp):
+    def create_article(self, name, url, source, article_key, timestamp):
         """
         A helper method for creating an article
         """
@@ -31,16 +31,17 @@ class TrackerClient:
             timestamp=timestamp
         )
 
-    def get_articles(self, new_only):
+    def get_articles(self, new_only=True):
         """
         Gets a list of article objects
         """
-        articles = self.__get_articles()
+        import pdb; pdb.set_trace()
+        articles = self._get_articles()
         if not new_only:
             return articles
         return self.__filter_by_new_listings(articles)
 
-    def __get_articles(self):
+    def _get_articles(self):
         raise NotImplementedError('Must define method in sub-class.')
 
     def __filter_by_new_listings(self, articles):
@@ -63,18 +64,3 @@ class TrackerClient:
             results = [ r for r in results if r.article_key not in known ]
 
         return results
-
-    @classmethod
-    def get_clients(cls, config):
-        """
-        Get a list of all configured tracker clients
-        config - The config object containing all possible tracker configurations
-        """
-        "Use this link: http://stackoverflow.com/a/18977876"
-        for subclass in cls.__subclasses__():
-
-            config = ConfigClass.get_config(subclass.TRACKER_NAME or '', subclass.KEYS or [])
-            if config:
-                client = subclass(config)
-                if client.is_configured:
-                    yield client

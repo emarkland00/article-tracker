@@ -40,11 +40,13 @@ class ConfigClass:
 
         self.instance = ConfigClass.__INST__.instance
 
-    def get_config(self, section_name, section_keys):
-        if not self.instance or not self.instance.has_section(section_name):
+    @staticmethod
+    def get_config(section_name, section_keys):
+        instance = ConfigClass.get_instance()
+        if not instance or not instance.instance.has_section(section_name):
             return None
 
-        fn = lambda x: self.instance.get(section_name, x)
+        fn = lambda x: instance.instance.get(section_name, x)
         return { k.lower():fn(k) for k in section_keys }
 
     def get_mysql_config(self):

@@ -46,7 +46,7 @@ class HackerNewsClient(TrackerClient):
         res = s.post(self.base_url + '/login', headers=headers, data=data)
         self.session = s
 
-    def __get_articles(self):
+    def _get_articles(self):
         posts = self.fetch_upvoted_posts()
         articles = [ create_article(p['title'], p['link'], 'hacker news', p['id'], p['timestamp']) for p in posts ]
         return articles

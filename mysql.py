@@ -5,6 +5,7 @@ import itertools
 __MYSQL_DB__ = MySQLDatabase(None)
 
 class MySQLModel(Model):
+    __MYSQL_INIT__ = None
     """A base model that will use our MySQL database"""
     class Meta:
         database = __MYSQL_DB__
@@ -14,6 +15,9 @@ class MySQLModel(Model):
         """
         Checks whether if the db has been configured
         """
+        if MySQLModel.__MYSQL_INIT__ is None:
+            MySQLModel.__MYSQL_INIT__ = init()
+
         try:
             return cls._meta.database.get_conn().open;
         except:
@@ -85,14 +89,17 @@ def init():
     mysql_config = ConfigClass().get_mysql_config()
     if not mysql_config:
         print "Config file missing section for [mysql]"
-    else:
-        # initialize database connection
-        __MYSQL_DB__.init(
-            mysql_config['db_name'],
-            host=mysql_config['host'],
-            user=mysql_config['username'],
-            passwd=mysql_config['password'])
+        return False
 
-        # Auto generate tables needed for this operation (if they don't exist)
-        if not Article.table_exists():
-            Article.create_table()
+    # initialize database connection
+    __MYSQL_DB__.init(
+        mysql_config['db_name'],
+        host=mysql_config['host'],
+        user=mysql_config['username'],
+        passwd=mysql_config['password'])
+
+    # Auto generate tables needed for this operation (if they don't exist)
+    if not Article.table_exists():
+        Article.create_table()
+
+    return True

@@ -1,9 +1,7 @@
+import os.path
 import requests
 from requests.auth import HTTPBasicAuth
-from config import ConfigClass
 from datetime import datetime, timedelta
-
-import os.path
 from clients.TrackerClient import TrackerClient
 from RedditClientError import RedditClientError
 from RedditPostListing import RedditPostListing
@@ -25,13 +23,13 @@ class RedditClient(TrackerClient):
         self.client_id = json_config['client_id']
         self.client_secret = json_config['client_secret']
         self.sub_reddits = None
-        if 'sub_reddits' in reddit_config:
-            self.sub_reddits = [ s.decode('utf-8') for s in reddit_config["sub_reddits"].split(',') ]
+        if 'sub_reddits' in json_config:
+            self.sub_reddits = [ s.decode('utf-8') for s in json_config["sub_reddits"].split(',') ]
         self.access_token = self.__fetch_access_token()
         self.__configured = True
 
-    def __get_articles(self):
-        filtered_posts = self.get_liked_posts()
+    def _get_articles(self):
+        filtered_posts = self.__get_liked_posts()
         articles = []
         for post in filtered_posts:
             art = post.as_json()

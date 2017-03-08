@@ -1,25 +1,23 @@
-import requests
-from config import ConfigClass
-from lxml import etree
-from io import StringIO
 import urlparse
 import datetime
+import requests
+from lxml import etree
+from io import StringIO
 from clients.TrackerClient import TrackerClient
 
 class HackerNewsClient(TrackerClient):
     KEYS = [ 'BASE_URL', 'USERNAME', 'PASSWORD', 'USER_AGENT' ]
     TRACKER_NAME = 'hacker_news'
 
-    def __init__(self):
-        hn_config = ConfigClass().get_hacker_news_config()
-        if not hn_config:
-            print "Unable to fetch content from hacker news"
+    def __init__(self, json_config):
+        super(HackerNewsClient, self).__init__(json_config)
+        if not json_config:
             return
 
-        self.username = hn_config['username']
-        self.password = hn_config['password']
-        self.base_url = hn_config['base_url']
-        self.user_agent = hn_config['user_agent']
+        self.username = json_config['username']
+        self.password = json_config['password']
+        self.base_url = json_config['base_url']
+        self.user_agent = json_config['user_agent']
         self.session = None
 
     def __login(self):
@@ -46,9 +44,9 @@ class HackerNewsClient(TrackerClient):
         res = s.post(self.base_url + '/login', headers=headers, data=data)
         self.session = s
 
-    def __get_articles(self):
+    def _get_articles(self):
         posts = self.fetch_upvoted_posts()
-        articles = [ create_article(p['title'], p['link'], 'hacker news', p['id'], p['timestamp']) for p in posts ]
+        articles = [ self.create_article(p['title'], p['link'], 'hacker news', p['id'], p['timestamp']) for p in posts ]
         return articles
 
     def fetch_upvoted_posts(self, days_limit=None):

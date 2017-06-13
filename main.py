@@ -1,27 +1,24 @@
 import sys
+import os
+import argparse
 from datetime import datetime
 from config import ConfigClass
 from mysql import Article
 from clients.TrackerClientFactory import TrackerClientFactory
 
-if __name__ == '__main__':
-    def print_msg(msg):
-        # Helper print method that also records timestamp
-        date = datetime.now()
-        d = date.strftime('%Y-%m-%d %I:%M:%S %p')
-        print(d + ': ' + msg)
+def main():
+    args = collect_args()
 
     # Load config
-    filename = sys.argv[1] if len(sys.argv) == 2 else "config.ini"
-    if not ConfigClass.init(filename):
-        print_msg("Unable to find load config file {0}".format(filename))
-        exit()
+    if not ConfigClass.init(args.config):
+        print_msg("Unable to find load config file '{0}'.".format(filename))
+        exit(-1)
 
     # Get clients
     clients = TrackerClientFactory.get_clients(ConfigClass.get_instance())
     if not clients:
-        print_msg("Unable to find any configured clients. exiting")
-        exit()
+        print_msg("Unable to find any configured clients. Exiting.")
+        exit(-1)
 
     # Get articles
     for c in clients:
@@ -32,3 +29,30 @@ if __name__ == '__main__':
             print_msg("finished getting {0} stuff!".format(c.TRACKER_NAME))
         else:
             print_msg("Found no new articles for {0}".format(c.TRACKER_NAME))
+
+def collect_args():
+
+    parser = argparse.ArgumentParser(description="A tool used for getting your latest articles that you've read these days")
+
+    # config file
+    def valid_file(filename):
+        if not os.path.exists(filename):
+            raise argparse.ArgumentError("Unable to find file {0}".format(filename))
+        return filename
+    parser.add_argument('--config', help='The path to the configuration file', type=valid_file, default='config.ini')
+
+    args = parser.parse_args()
+    if args.help:
+        parse.print_help()
+
+    return args
+
+
+def print_msg(msg):
+    # Helper print method that also records timestamp
+    date = datetime.now()
+    d = date.strftime('%Y-%m-%d %I:%M:%S %p')
+    print(d + ': ' + msg)
+
+if __name__ == '__main__':
+    main()

@@ -1,7 +1,8 @@
-FROM python:3.7.0a2-alpine3.6
+FROM python:2.7.14
 
 MAINTAINER Errol Markland
 
+RUN apt-get install gcc
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 

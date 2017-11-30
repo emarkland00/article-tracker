@@ -1,0 +1,27 @@
+version: "3.4"
+
+services:
+  tracker:
+    build: .
+    networks:
+      - tracker_network
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      # change this locally and update config.ini accordingly
+      - MYSQL_ROOT_PASSWORD=password
+    depends_on:
+      - mysql
+
+  mysql:
+    build: mysql:8.0.3
+    networks:
+      - tracker_network
+    volumes:
+      - db_data:/var/lib/mysql
+    expose:
+      - "3306"
+
+networks:
+  tracker_network:
+    driver: bridge

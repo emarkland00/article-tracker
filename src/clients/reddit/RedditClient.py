@@ -44,7 +44,7 @@ class RedditClient(TrackerClient):
             'Authorization': 'bearer ' + self.access_token
         }
         req = requests.get(url, headers=headers)
-        json = req.json();
+        json = req.json()
         posts = RedditPostListing(json['data']).children
         if self.sub_reddits:
             posts = [ l for l in posts if l.data.subreddit in self.sub_reddits ]

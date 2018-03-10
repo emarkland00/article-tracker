@@ -43,7 +43,7 @@ def collect_args():
     parser.add_argument('--config', help='The path to the configuration file', type=valid_file, default='config.ini')
 
     args = parser.parse_args()
-    if args.help:
+    if len(sys.argv) == 1:
         parser.print_help()
 
     return args

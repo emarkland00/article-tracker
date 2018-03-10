@@ -48,7 +48,7 @@ If you're running Docker, then running this script has gotten even easier.
 Run `docker pull sol7117/article-tracker` to pull down the docker container. Make sure that your `config.ini` is in the same directory
 as where you pulled down the docker container.
 
-Finally, run `docker run sol7117/article-tracker` to run the tracker. 
+Finally, run `docker run --rm sol7117/article-tracker` to run the tracker. 
 
 ## Example use case
 <a href='https://errolmarkland.com' target='_blank'>My site</a> (No longer primarily used on my site, as of Nov. 2016. <a href='https://getpocket.com' target='_blank'>Pocket</a> does everything I'd like.)

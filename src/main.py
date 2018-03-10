@@ -32,7 +32,6 @@ def main():
             print_msg("Found no new articles for {0}".format(c.TRACKER_NAME))
 
 def collect_args():
-
     parser = argparse.ArgumentParser(description="A tool used for getting your latest articles that you've read these days")
 
     # config file
@@ -41,11 +40,8 @@ def collect_args():
             raise argparse.ArgumentError("Unable to find file {0}".format(filename))
         return filename
     parser.add_argument('--config', help='The path to the configuration file', type=valid_file, default='config.ini')
-
+    
     args = parser.parse_args()
-    if len(sys.argv) == 1:
-        parser.print_help()
-
     return args
 
 

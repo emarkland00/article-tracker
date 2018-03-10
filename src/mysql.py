@@ -72,6 +72,12 @@ class Article(MySQLModel):
 
         results = articles
 
+
+        if not super(Article, cls).has_db_configured():
+            # no db to check, return everything
+            return results
+
+
         # must sort articles before grouping
         source_key = lambda x: x.source
         arts = sorted(articles, key=source_key)

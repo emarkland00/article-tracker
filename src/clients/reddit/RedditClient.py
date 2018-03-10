@@ -44,7 +44,7 @@ class RedditClient(TrackerClient):
             'Authorization': 'bearer ' + self.access_token
         }
         req = requests.get(url, headers=headers)
-        json = req.json();
+        json = req.json()
         posts = RedditPostListing(json['data']).children
         if self.sub_reddits:
             posts = [ l for l in posts if l.data.subreddit in self.sub_reddits ]
@@ -52,14 +52,13 @@ class RedditClient(TrackerClient):
         return posts
 
     def __fetch_access_token(self):
+        # get cached token
         access_token = self.__fetch_access_token_from_file(RedditClient.__FILE_NAME__)
         if access_token is not None:
             return access_token
 
-        r = self.__fetch_access_token_from_url()
-        access_token = r[0]
-        exp_time = r[1]
-
+        # get fresh token
+        access_token, exp_time = self.__fetch_access_token_from_url()
         with open(RedditClient.__FILE_NAME__, 'w') as f:
             f.write(access_token + '|' + str(exp_time))
 
@@ -71,7 +70,7 @@ class RedditClient(TrackerClient):
 
         with open(path, 'r') as f:
             content = f.read().split('|')
-            if len(content) is not 2:
+            if len(content) != 2:
                 return None
 
             access_token = content[0]
@@ -83,9 +82,9 @@ class RedditClient(TrackerClient):
 
     def __fetch_access_token_from_url(self):
         req = requests.post(RedditClient.__AUTH_URL__,
-                      auth=HTTPBasicAuth(self.client_id, self.client_secret),
-                      headers={'User-Agent': self.user_agent},
-                      data={'grant_type':'client_credentials'})
+            auth=HTTPBasicAuth(self.client_id, self.client_secret),
+            headers={ 'User-Agent': self.user_agent },
+            data={ 'grant_type':'client_credentials' })
 
         json = req.json()
         access_token = json["access_token"]

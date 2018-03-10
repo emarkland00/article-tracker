@@ -49,10 +49,11 @@ class ConfigClass:
         inst = instance.instance
         if not inst.has_section(section_name):
             return None
-            
+
         fn = lambda x: inst.get(section_name, x)
         return { k.lower():fn(k) for k in section_keys }
 
+    
     def get_mysql_config(self):
         keys = [ 'HOST', 'USERNAME', 'PASSWORD', 'DB_NAME' ]
         return self.get_config('mysql', keys)

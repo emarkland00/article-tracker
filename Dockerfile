@@ -11,6 +11,6 @@ RUN pip install -r requirements.txt
 COPY src/ src/
 
 # Copy config file (must manually supply!)
-COPY config.ini src/config.ini
+COPY config.ini config.ini
 
 CMD ["python", "src/main.py"]

@@ -7,7 +7,6 @@ from mysql import Article
 from clients.TrackerClientFactory import TrackerClientFactory
 
 def main():
-    #TODO: Add a flag to specify if we want to get flags from environment variables or flag
     args = collect_args()
 
     # Load config

@@ -11,7 +11,7 @@ def main():
 
     # Load config
     if not ConfigClass.init(args.config):
-        print_msg("Unable to find load config file '{0}'.".format(filename))
+        print_msg("Unable to find load config file '{0}'.".format(args.config))
         exit(-1)
 
     # Get clients
@@ -43,7 +43,7 @@ def collect_args():
 
     args = parser.parse_args()
     if args.help:
-        parse.print_help()
+        parser.print_help()
 
     return args
 
